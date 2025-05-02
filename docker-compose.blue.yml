@@ -19,6 +19,7 @@ services:
       - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
     volumes:
       - n8n_storage:/home/node/.n8n
+      - local_files:/files
     depends_on:
       - postgres
       - redis

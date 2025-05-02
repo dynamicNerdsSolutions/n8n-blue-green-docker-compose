@@ -31,7 +31,7 @@ Edit `.env` and set your values.
 
 Install [Caddy](https://caddyserver.com/docs/install) **directly on the server (not via Docker)**.
 
-Edit `caddy/caddy.service` to use your actual domain and start the service:
+Edit `caddy/Caddyfile` to use your actual domain and start the service:
 
 ```bash
 sudo cp caddy/Caddyfile /etc/caddy/Caddyfile
