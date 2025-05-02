@@ -32,7 +32,7 @@ services:
   n8n-green-main:
     <<: *shared
     ports:
-      - 5678:5678
+      - 5679:5678
 
   n8n-green-worker:
     <<: *shared

@@ -8,9 +8,13 @@ ACTIVE_STACK=$(jq -r '.active_stack' "$STATE_FILE")
 if [[ "$ACTIVE_STACK" == "blue" ]]; then
   FROM="blue"
   TO="green"
+  FROM_PORT="5678"
+  TO_PORT="5679"
 else
   FROM="green"
   TO="blue"
+  FROM_PORT="5679"
+  TO_PORT="5678"
 fi
 
 echo "🔁 Switching from $FROM to $TO"
@@ -20,7 +24,7 @@ echo "🚀 Starting $TO stack..."
 docker compose -f docker-compose.$TO.yml up -d
 
 # Step 2: Wait for main to be ready
-until curl -s http://n8n-$TO-main:5678/healthz | grep -q '"status":"ok"'; do
+until curl -s http://n8n-$TO-main:$TO_PORT/healthz | grep -q '"status":"ok"'; do
   echo "⏳ Waiting for n8n-$TO-main to be ready..."
   sleep 1
 done
@@ -29,7 +33,7 @@ done
 
 # Step 4: Switch Caddy
 echo "🔀 Updating Caddy to point to n8n-$TO-main..."
-sed -i "s/n8n-$FROM-main/n8n-$TO-main/" "$CADDYFILE_PATH"
+sed -i "s/n8n-$FROM-main:$FROM_PORT/n8n-$TO-main:$TO_PORT/" "$CADDYFILE_PATH"
 sudo caddy reload --config "$CADDYFILE_PATH"
 
 # Step 5: Update state file
