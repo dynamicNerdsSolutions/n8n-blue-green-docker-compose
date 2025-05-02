@@ -40,7 +40,7 @@ done
 # Step 4: Switch Caddy
 echo "🔀 Updating Caddy to point to n8n-$TO-main..."
 sed -i "s/127.0.0.1:$FROM_PORT/127.0.0.1:$TO_PORT/" "$CADDYFILE_PATH"
-sudo caddy reload --config "$CADDYFILE_PATH"
+sudo caddy reload --config "/etc/caddy/Caddyfile"
 
 # Step 5: Update state file
 jq --arg to "$TO" '.active_stack = $to | .last_switch = now' "$STATE_FILE" > tmp.$$.json && mv tmp.$$.json "$STATE_FILE"
