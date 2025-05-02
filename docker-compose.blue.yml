@@ -1,0 +1,42 @@
+# docker-compose.blue.yml
+version: '3.8'
+
+services:
+  n8n-blue-main:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+      - QUEUE_MODE=${QUEUE_MODE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - N8N_HOST=${N8N_HOST}
+      - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    depends_on:
+      - postgres
+      - redis
+
+  n8n-blue-worker:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    environment:
+      - EXECUTIONS_MODE=queue
+      - QUEUE_MODE=${QUEUE_MODE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+    depends_on:
+      - postgres
+      - redis
