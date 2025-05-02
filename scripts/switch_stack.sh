@@ -37,8 +37,8 @@ done
 
 #wait until n8n is ready (i.e. docker log for main includes "Editor is now accessible via:" in the last 5 lines)
 until docker container logs n8n-n8n-$TO-main-1 | tail -n 5 | grep -q "Editor is now accessible via:"; do
-  echo "⏳ Waiting for n8n-$TO-main to be ready..."
-  sleep 1
+  echo "⏳ Waiting for n8n-$TO-main UI to be ready..."
+  sleep 5 # Add delay between checks to reduce load
 done
 
 
