@@ -11,16 +11,8 @@ while [[ ! "$url" =~ ^[a-zA-Z0-9.-]+$ ]]; do
   fi
 done
 
-#promptfor projectname in snake case
-projectname=""
-while [[ ! "$projectname" =~ ^[a-z]+(_[a-z]+)*$ ]]; do
-  read -p "Enter the project name in snake case: (example: my_n8n)" projectname
-  if [[ "$projectname" =~ ^[a-z]+(_[a-z]+)*$ ]]; then
-    break
-  else
-    echo "Invalid project name"
-  fi
-done
+#use the url to generate the projectname in snake case
+projectname=$(echo "$url" | sed 's/\./_/g' | sed 's/-/_/g')
 
 #copy the caddyfile into one with the projectname in the name
 echo "Copying Caddyfile to ${projectname}"
