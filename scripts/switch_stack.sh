@@ -35,6 +35,13 @@ until curl -s http://localhost:$TO_PORT/healthz | grep -q '"status":"ok"'; do
   sleep 1
 done
 
+#wait until n8n is ready (i.e. docker log for main includes "Editor is now accessible via:" in the last 5 lines)
+until docker container logs n8n-n8n-$TO-main-1 | tail -n 5 | grep -q "Editor is now accessible via:"; do
+  echo "⏳ Waiting for n8n-$TO-main to be ready..."
+  sleep 1
+done
+
+
 # Step 3: TODO: Add optional scheduled task check
 
 # Step 4: Switch Caddy
