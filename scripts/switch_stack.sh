@@ -4,6 +4,12 @@ STATE_FILE=".n8n_active_stack.json"
 THRESHOLD_SECONDS=60
 CADDYFILE_PATH="/etc/caddy/sites-enabled/$(cat .caddypath)"
 
+#check if .active_stack.json exists
+if [ ! -f "$STATE_FILE" ]; then
+  #create it with the active_stack set to blue
+  echo '{"active_stack": "blue"}' > "$STATE_FILE"
+fi
+
 ACTIVE_STACK=$(jq -r '.active_stack' "$STATE_FILE")
 if [[ "$ACTIVE_STACK" == "blue" ]]; then
   FROM="blue"

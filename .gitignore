@@ -1,2 +1,3 @@
 .env
 .caddypath
+.n8n_active_stack.json
