@@ -97,6 +97,23 @@ This toggles between blue and green, updates the Caddy reverse proxy, and stops 
 - Compares image digest
 - Switches stack only if the image is new
 
+### ✅ Set up automatic daily updates
+
+To automatically check for updates every day at midnight, add this to your crontab:
+
+```bash
+# Edit crontab
+crontab -e
+
+# Add this line (adjust the path to match your installation)
+0 0 * * * cd /path/to/n8n-blue-green-docker-compose && ./scripts/gracefully_update.sh >> /var/log/n8n-updates.log 2>&1
+```
+
+This will:
+- Run the update check at midnight every day
+- Log the output to `/var/log/n8n-updates.log`
+- Only switch stacks if a new version is available
+
 ---
 
 ## ⚠️ Important Notes
