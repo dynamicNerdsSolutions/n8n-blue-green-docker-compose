@@ -33,7 +33,7 @@ done
 
 # Step 4: Switch Caddy
 echo "🔀 Updating Caddy to point to n8n-$TO-main..."
-sed -i "s/n8n-$FROM-main:$FROM_PORT/n8n-$TO-main:$TO_PORT/" "$CADDYFILE_PATH"
+sed -i "s/127.0.0.1:$FROM_PORT/127.0.0.1:$TO_PORT/" "$CADDYFILE_PATH"
 sudo caddy reload --config "$CADDYFILE_PATH"
 
 # Step 5: Update state file
