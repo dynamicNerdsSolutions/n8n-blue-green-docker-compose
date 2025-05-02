@@ -2,7 +2,7 @@
 
 STATE_FILE=".n8n_active_stack.json"
 THRESHOLD_SECONDS=60
-CADDYFILE_PATH="/etc/caddy/Caddyfile"
+CADDYFILE_PATH="/etc/caddy/sites-enabled/$(cat .caddypath)"
 
 ACTIVE_STACK=$(jq -r '.active_stack' "$STATE_FILE")
 if [[ "$ACTIVE_STACK" == "blue" ]]; then

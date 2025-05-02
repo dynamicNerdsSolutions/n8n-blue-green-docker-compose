@@ -26,6 +26,12 @@ sed -i "s/automation.MY_DOMAIN.TLD/${url}/g" caddy/${projectname}
 echo "Moving Caddyfile to /etc/caddy/sites-enabled/${projectname}"
 mv caddy/${projectname} /etc/caddy/sites-enabled/${projectname}
 
+#store the projectname in a .caddypath file
+touch .caddypath
+echo "/etc/caddy/sites-enabled/${projectname}" > .caddypath
+
+
+
 echo "Validating /etc/caddy structure"
 #Check if a Caddyfile exists
 if [ ! -f /etc/caddy/Caddyfile ]; then
