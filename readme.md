@@ -2,6 +2,9 @@
 
 This repository provides a Docker-based deployment setup for running [N8N](https://n8n.io) in **blue/green mode**, with **zero-downtime updates** using **Caddy** as a reverse proxy.
 
+_*Note The docker structure is strongly inspired (almost as is) as the one in [N8N's repo example](https://github.com/n8n-io/n8n-hosting/tree/main/docker-compose/withPostgresAndWorker)_
+
+
 ## 📦 What's Included
 
 - `docker-compose.base.yml`: defines shared services (Postgres, Redis)
@@ -9,10 +12,10 @@ This repository provides a Docker-based deployment setup for running [N8N](https
 - `docker-compose.green.yml`: green stack (main + worker)
 - `scripts/switch_stack.sh`: toggles between blue and green
 - `scripts/gracefully_update.sh`: checks for new N8N image and switches if needed
-- `caddy/Caddyfile`: template to routes traffic to the active stack with security headers
+- `caddy/Caddyfile`: template to routes traffic to the active stack
 - `.n8n_active_stack.json`: tracks which stack is active
 - `.env.example`: template file for shared environment variables
-- `install.sh`: automated installation script
+- `install.sh`: automated caddy setup script
 
 ---
 
@@ -21,7 +24,7 @@ This repository provides a Docker-based deployment setup for running [N8N](https
 ### 1. Clone and configure
 
 ```bash
-git clone https://your-repo.git
+git clone https://github.com/dynamicNerdsSolutions/n8n-blue-green-docker-compose
 cd n8n-blue-green-docker-compose
 cp .env.example .env
 ```
@@ -35,15 +38,14 @@ Edit `.env` and set your values. Required variables:
 - `ENCRYPTION_KEY`: n8n encryption key
 
 
-### 2. Run the Installation Script
-Better to do it on a clean server, otherwise, take time to read what it does.
+### 2. Install Caddy and Run the Setup Script
+#### Caddy install
+Follow the [instructions to install Caddy](https://caddyserver.com/docs/install)
+
+#### Setup for the project
+Better to do it on a clean server, otherwise, take some time to read what the script does.
 
 Not compatible with nginx if it is installed and running
-
-The installation script will:
-- Set up Caddy with your domain
-- Configure the reverse proxy
-- Enable and start the Caddy service
 
 ```bash
 sudo ./install.sh
@@ -149,27 +151,6 @@ docker compose -f docker-compose.base.yml -f docker-compose.green.yml down
 - Caddy v2
 - N8N 1.9+
 - Ubuntu 22.04 LTS
-
----
-
-## 🔒 Security Features
-
-- Caddy with automatic HTTPS
-- Security headers (HSTS, CSP, X-Frame-Options)
-- Database with non-root user
-- Redis with persistent storage
-- Health checks for all services
-- Automated Caddy configuration with proper permissions
-
----
-
-## 🛠 Future Improvements
-
-- Implement cron task checking before switching
-- Add webhook retry/buffer proxy
-- Implement database backup strategy
-- Add monitoring and alerting
-- Enhance installation script with more validation
 
 ---
 
