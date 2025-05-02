@@ -9,9 +9,10 @@ This repository provides a Docker-based deployment setup for running [N8N](https
 - `docker-compose.green.yml`: green stack (main + worker)
 - `scripts/switch_stack.sh`: toggles between blue and green
 - `scripts/gracefully_update.sh`: checks for new N8N image and switches if needed
-- `caddy/Caddyfile`: routes traffic to the active stack
+- `caddy/Caddyfile`: template to routes traffic to the active stack with security headers
 - `.n8n_active_stack.json`: tracks which stack is active
-- `.env`: shared environment variables
+- `.env.example`: template file for shared environment variables
+- `install.sh`: automated installation script
 
 ---
 
@@ -25,28 +26,39 @@ cd n8n-blue-green-docker-compose
 cp .env.example .env
 ```
 
-Edit `.env` and set your values.
+Edit `.env` and set your values. Required variables:
+- `POSTGRES_USER`: Database root user
+- `POSTGRES_PASSWORD`: Database root password
+- `POSTGRES_DB`: Database name
+- `POSTGRES_NON_ROOT_USER`: Application database user
+- `POSTGRES_NON_ROOT_PASSWORD`: Application database password
+- `ENCRYPTION_KEY`: n8n encryption key
 
-### 2. Setup Caddy
 
-Install [Caddy](https://caddyserver.com/docs/install) **directly on the server (not via Docker)**.
+### 2. Run the Installation Script
+Better to do it on a clean server, otherwise, take time to read what it does.
 
-Edit `caddy/Caddyfile` to use your actual domain and start the service:
+Not compatible with nginx if it is installed and running
+
+The installation script will:
+- Set up Caddy with your domain
+- Configure the reverse proxy
+- Enable and start the Caddy service
 
 ```bash
-sudo cp caddy/Caddyfile /etc/caddy/Caddyfile
-sudo systemctl enable --now caddy
+sudo ./install.sh
 ```
 
-### Caddyfile example
+Follow the prompts to enter your domain name. The script will:
+- Create necessary Caddy directories
+- Configure your domain
+- Set up the reverse proxy
+- Enable and start Caddy
 
-```caddy
-automation.MY_DOMAIN.TLD {
-  reverse_proxy n8n-blue-main:5678
-}
-```
-
-Replace `MY_DOMAIN.TLD` with your actual domain. Make sure DNS is set and ports 80/443 are open.
+Make sure:
+- DNS is configured for your domain
+- Ports 80/443 are open
+- You have sudo privileges
 
 ---
 
@@ -55,7 +67,11 @@ Replace `MY_DOMAIN.TLD` with your actual domain. Make sure DNS is set and ports 
 ### ✅ Initial deployment
 
 ```bash
-docker-compose -f docker-compose.base.yml -f docker-compose.blue.yml up -d
+# Create initial state file
+echo '{"active_stack": "blue", "last_switch": null}' > .n8n_active_stack.json
+
+# Start the blue stack
+docker compose -f docker-compose.blue.yml up -d
 ```
 
 ### ✅ Switch stack
@@ -64,7 +80,12 @@ docker-compose -f docker-compose.base.yml -f docker-compose.blue.yml up -d
 ./scripts/switch_stack.sh
 ```
 
-This toggles between blue and green, updates the Caddy reverse proxy, and stops the old main container. Usually called from gracefully_update.sh
+This toggles between blue and green, updates the Caddy reverse proxy, and stops the old main container. The script:
+- Starts the target stack
+- Waits for health check
+- Updates Caddy configuration
+- Updates state file
+- Stops the old stack
 
 ### ✅ Check for updates + switch (automated)
 
@@ -78,14 +99,7 @@ This toggles between blue and green, updates the Caddy reverse proxy, and stops 
 
 ---
 
-## ⚠️ Gotchas & Notes
-
-- **Caddy vs NGINX**: If NGINX is running, it will block ports 80/443. You must stop or uninstall NGINX before running Caddy if you want to use this repo right out of the box.
-  
-  ```bash
-  sudo systemctl stop nginx
-  sudo systemctl disable nginx
-  ```
+## ⚠️ Important Notes
 
 - **Only one `main` container should be active at a time**. Having two can cause:
   - duplicate scheduled executions
@@ -97,10 +111,7 @@ This toggles between blue and green, updates the Caddy reverse proxy, and stops 
 
 - **Healthcheck before switching** ensures no downtime. The script waits until `/healthz` responds OK.
 
-- **Cron triggers are not automatically analyzed** yet — you can extend the script to delay switching if a cron task is about to fire.
-
-- You must maintain the `.n8n_active_stack.json` file — it tracks which stack is currently active.
-
+- The `.n8n_active_stack.json` file tracks which stack is currently active. Don't modify it manually.
 
 ---
 
@@ -109,8 +120,8 @@ This toggles between blue and green, updates the Caddy reverse proxy, and stops 
 To stop everything:
 
 ```bash
-docker-compose -f docker-compose.base.yml -f docker-compose.blue.yml down
-docker-compose -f docker-compose.base.yml -f docker-compose.green.yml down
+docker compose -f docker-compose.base.yml -f docker-compose.blue.yml down
+docker compose -f docker-compose.base.yml -f docker-compose.green.yml down
 ```
 
 ---
@@ -119,15 +130,29 @@ docker-compose -f docker-compose.base.yml -f docker-compose.green.yml down
 
 - Docker Compose v2
 - Caddy v2
-- N8N 1.9
+- N8N 1.9+
 - Ubuntu 22.04 LTS
+
+---
+
+## 🔒 Security Features
+
+- Caddy with automatic HTTPS
+- Security headers (HSTS, CSP, X-Frame-Options)
+- Database with non-root user
+- Redis with persistent storage
+- Health checks for all services
+- Automated Caddy configuration with proper permissions
 
 ---
 
 ## 🛠 Future Improvements
 
-- Auto-check for cron tasks before switching
-- Add webhook retry/buffer proxy (if required)
+- Implement cron task checking before switching
+- Add webhook retry/buffer proxy
+- Implement database backup strategy
+- Add monitoring and alerting
+- Enhance installation script with more validation
 
 ---
 
