@@ -2,7 +2,7 @@
 
 STATE_FILE=".n8n_active_stack.json"
 THRESHOLD_SECONDS=60
-CADDYFILE_PATH="/etc/caddy/sites-enabled/$(cat .caddypath)"
+CADDYFILE_PATH="$(cat .caddypath)"
 
 #check if .active_stack.json exists
 if [ ! -f "$STATE_FILE" ]; then
