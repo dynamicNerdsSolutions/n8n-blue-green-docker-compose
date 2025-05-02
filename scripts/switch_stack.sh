@@ -24,7 +24,7 @@ echo "🚀 Starting $TO stack..."
 docker compose -f docker-compose.$TO.yml up -d
 
 # Step 2: Wait for main to be ready
-until curl -s http://n8n-$TO-main:$TO_PORT/healthz | grep -q '"status":"ok"'; do
+until curl -s http://localhost:$TO_PORT/healthz | grep -q '"status":"ok"'; do
   echo "⏳ Waiting for n8n-$TO-main to be ready..."
   sleep 1
 done
