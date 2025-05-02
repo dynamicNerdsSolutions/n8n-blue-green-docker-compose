@@ -28,7 +28,8 @@ cp caddy/Caddyfile caddy/${projectname}
 
 #replace the url in the caddyfile
 echo "Replacing url in ${projectname} Caddyfile"
-sed -i "s/example.com/${url}/g" caddy/${projectname}
+#initial value is automation.MY_DOMAIN.TLD
+sed -i "s/automation.MY_DOMAIN.TLD/${url}/g" caddy/${projectname}
 
 echo "Moving Caddyfile to /etc/caddy/sites-enabled/${projectname}"
 mv caddy/${projectname} /etc/caddy/sites-enabled/${projectname}
