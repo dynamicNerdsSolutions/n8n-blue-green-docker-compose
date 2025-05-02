@@ -17,7 +17,7 @@ echo "🔁 Switching from $FROM to $TO"
 
 # Step 1: Start target stack
 echo "🚀 Starting $TO stack..."
-docker-compose -f docker-compose.base.yml -f docker-compose.$TO.yml up -d
+docker compose -f docker-compose.$TO.yml up -d
 
 # Step 2: Wait for main to be ready
 until curl -s http://n8n-$TO-main:5678/healthz | grep -q '"status":"ok"'; do
@@ -37,7 +37,7 @@ jq --arg to "$TO" '.active_stack = $to | .last_switch = now' "$STATE_FILE" > tmp
 
 # Step 6: Stop previous main
 echo "🛑 Stopping n8n-$FROM-main..."
-docker-compose -f docker-compose.base.yml -f docker-compose.$FROM.yml stop n8n-$FROM-main
+docker compose -f docker-compose.$FROM.yml stop n8n-$FROM-main
 
 # Step 7: Wait for executions to finish (optional) then stop worker
 # echo "⏳ Waiting for active jobs to complete in $FROM... (TODO)"
