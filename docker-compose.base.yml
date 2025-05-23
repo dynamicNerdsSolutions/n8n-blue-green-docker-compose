@@ -5,7 +5,7 @@ volumes:
   n8n_storage:
   redis_storage:
   local_files:
-  custom_nodes:
+
 services:
   postgres:
     image: postgres:16
