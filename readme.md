@@ -16,6 +16,7 @@ _*Note The docker structure is strongly inspired (almost as is) as the one in [N
 - `.n8n_active_stack.json`: tracks which stack is active
 - `.env.example`: template file for shared environment variables
 - `install.sh`: automated caddy setup script
+- `custom_nodes/`: directory for custom N8N nodes (volume mapped in docker compose)
 
 ---
 
@@ -61,6 +62,17 @@ Make sure:
 - DNS is configured for your domain
 - Ports 80/443 are open
 - You have sudo privileges
+
+### 3. Custom Nodes
+
+The setup includes support for custom N8N nodes. Simply place your custom nodes in the `custom_nodes/` directory at the root of the project. The directory is automatically volume mapped to `/home/node/.n8n/custom` in both blue and green stacks.
+
+To add a custom node:
+1. Create a `custom_nodes/` directory if it doesn't exist
+2. Place your custom node files in this directory
+3. Restart the active stack to load the new nodes
+
+The custom nodes will be available in both blue and green stacks and will persist across deployments.
 
 ---
 
