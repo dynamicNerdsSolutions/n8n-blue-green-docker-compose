@@ -63,3 +63,28 @@ else
   echo "Caddy is running, reloading"
   sudo systemctl reload caddy
 fi
+
+echo "Setting up n8n storage folder..."
+#check if n8n_storage folder exists
+if [ ! -d "n8n_storage" ]; then
+  echo "n8n storage folder does not exist, creating it"
+  mkdir -p n8n_storage/custom
+  echo "n8n storage folder created"
+else
+  echo "n8n storage folder already exists"
+  echo "Checking if n8n_storage/custom folder exists..."
+  #check if custom folder exists
+  if [ ! -d "n8n_storage/custom" ]; then
+    echo "n8n_storage/custom folder does not exist, creating it"
+    mkdir -p n8n_storage/custom
+    echo "n8n_storage/custom folder created"
+  else
+    echo "n8n_storage/custom folder already exists"
+  fi
+fi
+echo "Setting permissions..."
+sudo chown -R 1000:1000 n8n_storage
+sudo chmod -R 755 n8n_storage
+echo "Permissions set"
+
+echo "Done!"
