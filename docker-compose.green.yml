@@ -20,6 +20,7 @@ x-shared: &shared
     - N8N_HOST
     - N8N_PROTOCOL
     - WEBHOOK_URL=https://${N8N_HOST}/
+    - N8N_CUSTOM_EXTENSIONS=/home/node/.n8n/custom
 
   links:
     - postgres
