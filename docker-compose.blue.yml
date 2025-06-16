@@ -26,7 +26,7 @@ x-shared: &shared
     - redis
   volumes:
     - ./n8n_storage:/home/node/.n8n
-    - local_files:/files
+    - ./local_files:/files
   depends_on:
     redis:
       condition: service_healthy
